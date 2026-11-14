@@ -12,18 +12,30 @@ const LINE = "#2a1712";
 function Eye({ cx, cy }: { cx: number; cy: number }) {
   return (
     <g>
-      <ellipse cx={cx} cy={cy} rx="12" ry="15" fill="#fff" />
-      <ellipse cx={cx} cy={cy + 2} rx="9.5" ry="12.5" fill={EYE} />
-      <ellipse cx={cx} cy={cy + 6} rx="7" ry="6" fill="#a0603e" opacity="0.55" />
-      <ellipse cx={cx} cy={cy + 1} rx="4.5" ry="6" fill={LINE} />
-      <circle cx={cx - 3.5} cy={cy - 4} r="3.6" fill="#fff" />
-      <circle cx={cx + 3.5} cy={cy + 6} r="1.6" fill="#fff" />
+      <ellipse cx={cx} cy={cy} rx="14.5" ry="18" fill="#fff" />
+      <ellipse cx={cx} cy={cy + 2} rx="12" ry="15.5" fill={EYE} />
+      <ellipse cx={cx} cy={cy + 8} rx="9" ry="7" fill="#c07a4e" opacity="0.6" />
+      <ellipse cx={cx} cy={cy + 1} rx="5.5" ry="7.5" fill={LINE} />
+      <circle cx={cx - 4.5} cy={cy - 5} r="5" fill="#fff" />
+      <circle cx={cx + 4.5} cy={cy + 7} r="2.2" fill="#fff" />
+      <circle cx={cx + 5.5} cy={cy - 6} r="1.4" fill="#fff" />
+      {/* 上睫毛＋眼尾小翹 */}
       <path
-        d={`M${cx - 14} ${cy - 7} Q${cx} ${cy - 20} ${cx + 14} ${cy - 9}`}
+        d={`M${cx - 16} ${cy - 6} Q${cx} ${cy - 23} ${cx + 16} ${cy - 8} L${cx + 19} ${cy - 12}`}
         fill="none"
         stroke={LINE}
-        strokeWidth="4"
+        strokeWidth="4.2"
         strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* 下睫毛 */}
+      <path
+        d={`M${cx - 6} ${cy + 18.5} Q${cx} ${cy + 20} ${cx + 6} ${cy + 18.5}`}
+        fill="none"
+        stroke={LINE}
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        opacity="0.6"
       />
     </g>
   );
@@ -73,9 +85,16 @@ export function HeroIllustration({ className = "" }: { className?: string }) {
       {/* 地面陰影 */}
       <ellipse cx="245" cy="486" rx="78" ry="11" fill="var(--ink)" opacity="0.12" />
 
-      {/* 後髮 */}
+      {/* 高馬尾（在頭後方，往右後甩） */}
       <path
-        d="M168 150 Q160 72 245 70 Q330 72 322 150 L330 262 Q306 276 290 254 L200 254 Q184 276 160 262 Z"
+        d="M306 96 Q380 88 386 170 Q390 240 352 304 Q358 262 346 222 Q336 176 314 132 Z"
+        fill={HAIR}
+      />
+      <path d="M340 120 Q368 150 366 220" fill="none" stroke={HAIR_LIGHT} strokeWidth="5" strokeLinecap="round" />
+
+      {/* 後髮（綁起來，只剩頭型） */}
+      <path
+        d="M168 150 Q160 72 245 70 Q330 72 322 150 L318 204 Q300 216 290 204 L200 204 Q190 216 172 204 Z"
         fill={HAIR}
       />
 
@@ -115,7 +134,10 @@ export function HeroIllustration({ className = "" }: { className?: string }) {
       <circle cx="276" cy="306" r="10" fill={SKIN} />
 
       {/* 臉 */}
-      <path d="M180 138 Q180 206 245 230 Q310 206 310 138 Z" fill={SKIN} />
+      <path
+        d="M178 132 Q174 188 206 214 Q228 230 245 230 Q262 230 284 214 Q316 188 312 132 Z"
+        fill={SKIN}
+      />
 
       {/* 側髮 */}
       <path d="M180 132 Q170 190 182 236 L194 232 Q186 186 194 140 Z" fill={HAIR} />
@@ -123,32 +145,43 @@ export function HeroIllustration({ className = "" }: { className?: string }) {
 
       {/* 瀏海 */}
       <path
-        d="M174 150 Q170 80 245 78 Q320 80 316 150 L302 138 L294 116 L284 146 L268 112 L256 144 L242 108 L228 146 L214 114 L204 144 L190 122 Z"
+        d="M174 150 Q170 80 245 78 Q320 80 316 150 L308 138 L300 114 Q284 130 268 146 Q272 124 272 106 Q248 132 218 146 Q228 126 230 110 Q208 130 190 142 Z"
         fill={HAIR}
       />
       <path d="M206 98 Q232 86 258 90" fill="none" stroke={HAIR_LIGHT} strokeWidth="6" strokeLinecap="round" />
-      {/* 髮夾 */}
-      <rect x="282" y="118" width="22" height="7" rx="3.5" fill="var(--accent)" transform="rotate(-28 293 121)" />
+      {/* 蝴蝶結 */}
+      <g transform="rotate(-18 312 104)">
+        <path d="M312 104 L290 90 Q284 104 290 118 Z" fill="var(--accent)" />
+        <path d="M312 104 L334 90 Q340 104 334 118 Z" fill="var(--accent)" />
+        <path d="M308 108 L300 128 L308 124 Z M316 108 L324 128 L316 124 Z" fill="var(--accent)" />
+        <circle cx="312" cy="104" r="6" fill="#c63f1c" />
+      </g>
 
       {/* 眉毛 */}
-      <path d="M208 151 Q218 146 228 150" fill="none" stroke={HAIR} strokeWidth="3" strokeLinecap="round" />
-      <path d="M262 150 Q272 146 282 151" fill="none" stroke={HAIR} strokeWidth="3" strokeLinecap="round" />
+      <path d="M207 150 Q215 146 223 149" fill="none" stroke={HAIR} strokeWidth="2.6" strokeLinecap="round" />
+      <path d="M267 149 Q275 146 283 150" fill="none" stroke={HAIR} strokeWidth="2.6" strokeLinecap="round" />
 
-      {/* 眼睛 */}
-      <Eye cx={219} cy={176} />
-      <Eye cx={271} cy={176} />
+      {/* 眼睛（大一點、靠下一點更顯稚氣） */}
+      <Eye cx={215} cy={180} />
+      <Eye cx={275} cy={180} />
 
-      {/* 腮紅與嘴 */}
-      <ellipse cx="203" cy="199" rx="11" ry="6" fill="#f4a1a1" opacity="0.6" />
-      <ellipse cx="287" cy="199" rx="11" ry="6" fill="#f4a1a1" opacity="0.6" />
-      <path d="M236 204 Q245 213 254 204" fill="none" stroke={LINE} strokeWidth="2.6" strokeLinecap="round" />
+      {/* 腮紅：圓腮紅＋斜線 */}
+      <ellipse cx="200" cy="206" rx="14" ry="8" fill="#f59a9a" opacity="0.55" />
+      <ellipse cx="290" cy="206" rx="14" ry="8" fill="#f59a9a" opacity="0.55" />
+      <path d="M193 208 L197 202 M200 209 L204 203 M207 208 L211 202" stroke="#e77b7b" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M283 208 L287 202 M290 209 L294 203 M297 208 L301 202" stroke="#e77b7b" strokeWidth="1.6" strokeLinecap="round" />
 
-      {/* 小緊張的汗滴 */}
-      <path d="M324 150 Q330 162 324 168 Q318 162 324 150 Z" fill="#9fd3f0" />
+      {/* 小鼻子 */}
+      <path d="M244 198 Q246 200 248 198" fill="none" stroke={SKIN_SHADE} strokeWidth="2" strokeLinecap="round" />
+
+      {/* 張口笑 */}
+      <path d="M237 207 Q245 207 253 207 Q252 218 245 218 Q238 218 237 207 Z" fill="#c4495a" stroke={LINE} strokeWidth="2" strokeLinejoin="round" />
+      <path d="M240.5 214 Q245 211 249.5 214 Q247.5 217 245 217 Q242.5 217 240.5 214 Z" fill="#f08a96" />
+
 
       {/* 閃亮與加油 */}
-      <Sparkle x={352} y={208} s={1.1} color="var(--accent)" />
-      <Sparkle x={380} y={238} s={0.6} color="#f5b83d" />
+      <Sparkle x={414} y={190} s={1.1} color="var(--accent)" />
+      <Sparkle x={432} y={232} s={0.6} color="#f5b83d" />
       <Sparkle x={168} y={58} s={0.7} color="#f5b83d" />
       <g transform="rotate(8 390 330)">
         <rect x="344" y="310" width="96" height="40" rx="20" fill="var(--leaf)" />
