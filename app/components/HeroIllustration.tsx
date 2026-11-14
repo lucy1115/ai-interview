@@ -85,16 +85,9 @@ export function HeroIllustration({ className = "" }: { className?: string }) {
       {/* 地面陰影 */}
       <ellipse cx="245" cy="486" rx="78" ry="11" fill="var(--ink)" opacity="0.12" />
 
-      {/* 高馬尾（在頭後方，往右後甩） */}
+      {/* 後髮：妹妹頭（齊下巴、髮尾往內收的圓弧鮑伯） */}
       <path
-        d="M306 96 Q380 88 386 170 Q390 240 352 304 Q358 262 346 222 Q336 176 314 132 Z"
-        fill={HAIR}
-      />
-      <path d="M340 120 Q368 150 366 220" fill="none" stroke={HAIR_LIGHT} strokeWidth="5" strokeLinecap="round" />
-
-      {/* 後髮（綁起來，只剩頭型） */}
-      <path
-        d="M168 150 Q160 72 245 70 Q330 72 322 150 L318 204 Q300 216 290 204 L200 204 Q190 216 172 204 Z"
+        d="M160 150 Q152 66 245 64 Q338 66 330 150 Q338 212 318 242 Q302 252 288 238 L202 238 Q188 252 172 242 Q152 212 160 150 Z"
         fill={HAIR}
       />
 
@@ -140,26 +133,34 @@ export function HeroIllustration({ className = "" }: { className?: string }) {
       />
 
       {/* 側髮 */}
-      <path d="M180 132 Q170 190 182 236 L194 232 Q186 186 194 140 Z" fill={HAIR} />
-      <path d="M310 132 Q320 190 308 236 L296 232 Q304 186 296 140 Z" fill={HAIR} />
+      <path d="M176 128 Q162 192 178 240 Q190 248 202 238 Q188 196 194 140 Z" fill={HAIR} />
+      <path d="M314 128 Q328 192 312 240 Q300 248 288 238 Q302 196 296 140 Z" fill={HAIR} />
 
-      {/* 瀏海 */}
+      {/* 瀏海：齊瀏海，下緣微微起伏 */}
       <path
-        d="M174 150 Q170 80 245 78 Q320 80 316 150 L308 138 L300 114 Q284 130 268 146 Q272 124 272 106 Q248 132 218 146 Q228 126 230 110 Q208 130 190 142 Z"
+        d="M172 152 Q166 76 245 74 Q324 76 318 152 Q311 147 303 149 Q290 145 276 149 Q260 145 245 148 Q230 145 214 149 Q200 145 187 149 Q179 147 172 152 Z"
         fill={HAIR}
       />
-      <path d="M206 98 Q232 86 258 90" fill="none" stroke={HAIR_LIGHT} strokeWidth="6" strokeLinecap="round" />
-      {/* 蝴蝶結 */}
-      <g transform="rotate(-18 312 104)">
-        <path d="M312 104 L290 90 Q284 104 290 118 Z" fill="var(--accent)" />
-        <path d="M312 104 L334 90 Q340 104 334 118 Z" fill="var(--accent)" />
-        <path d="M308 108 L300 128 L308 124 Z M316 108 L324 128 L316 124 Z" fill="var(--accent)" />
-        <circle cx="312" cy="104" r="6" fill="#c63f1c" />
+      <path
+        d="M214 149 Q216 128 222 112 M245 148 Q246 126 248 108 M276 149 Q274 128 270 112"
+        fill="none"
+        stroke={LINE}
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        opacity="0.35"
+      />
+      {/* 天使光圈 */}
+      <path d="M194 104 Q245 86 296 104" fill="none" stroke={HAIR_LIGHT} strokeWidth="7" strokeLinecap="round" />
+      {/* 小蝴蝶結髮夾 */}
+      <g transform="translate(300 110) rotate(-20) scale(0.7)">
+        <path d="M0 0 L-20 -12 Q-25 0 -20 12 Z" fill="var(--accent)" />
+        <path d="M0 0 L20 -12 Q25 0 20 12 Z" fill="var(--accent)" />
+        <circle r="5.5" fill="#c63f1c" />
       </g>
 
       {/* 眉毛 */}
-      <path d="M207 150 Q215 146 223 149" fill="none" stroke={HAIR} strokeWidth="2.6" strokeLinecap="round" />
-      <path d="M267 149 Q275 146 283 150" fill="none" stroke={HAIR} strokeWidth="2.6" strokeLinecap="round" />
+      <path d="M207 157 Q215 153 223 156" fill="none" stroke={HAIR} strokeWidth="2.6" strokeLinecap="round" />
+      <path d="M267 156 Q275 153 283 157" fill="none" stroke={HAIR} strokeWidth="2.6" strokeLinecap="round" />
 
       {/* 眼睛（大一點、靠下一點更顯稚氣） */}
       <Eye cx={215} cy={180} />
