@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SiteHeader } from "./components/SiteHeader";
 import { SiteFooter } from "./components/SiteFooter";
+import { HeroIllustration } from "./components/HeroIllustration";
 
 const FEATURES = [
   {
@@ -58,7 +59,7 @@ export default function Home() {
       <main className="flex-1">
         {/* Hero */}
         <section className="paper-dots relative overflow-hidden">
-          <div className="mx-auto flex w-full max-w-6xl flex-col px-4 pt-16 pb-20 sm:px-6 lg:pt-24 lg:pb-28">
+          <div className="mx-auto grid w-full max-w-6xl items-center gap-12 px-4 pt-16 pb-20 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:pt-24 lg:pb-28">
             <div className="rise flex flex-col items-start gap-7">
               <span className="inline-flex items-center gap-2 rounded-full border border-line bg-card px-3.5 py-1.5 text-xs font-medium text-ink-2">
                 <span className="size-1.5 rounded-full bg-accent" />
@@ -96,6 +97,7 @@ export default function Home() {
               </div>
               <p className="text-sm text-muted">不用註冊 · 貼上職缺就能開始</p>
             </div>
+            <HeroIllustration className="rise mx-auto w-full max-w-sm sm:max-w-md lg:max-w-none" />
           </div>
         </section>
 
