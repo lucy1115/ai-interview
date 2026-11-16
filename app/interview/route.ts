@@ -33,9 +33,10 @@ ${jobDescription}
 }
 
 export async function POST(request: Request) {
-  const apiKey = process.env.OPENAI_API_KEY;
+  // BYOK：使用使用者在瀏覽器設定的 API Key（由 header 帶入），不讀取伺服器環境變數
+  const apiKey = request.headers.get("x-openai-key")?.trim();
   if (!apiKey) {
-    return Response.json({ error: "伺服器未設定 OPENAI_API_KEY" }, { status: 500 });
+    return Response.json({ error: "請先在右上角「設定 API Key」輸入你的 OpenAI API Key", code: "missing_api_key" }, { status: 401 });
   }
 
   let body: { jobDescription?: unknown; messages?: unknown; questionCount?: unknown };
@@ -91,6 +92,12 @@ export async function POST(request: Request) {
   if (!res.ok) {
     const detail = await res.text();
     console.error("OpenAI API error:", res.status, detail);
+    if (res.status === 401) {
+      return Response.json({ error: "API Key 無效，請檢查後重新設定", code: "invalid_api_key" }, { status: 401 });
+    }
+    if (res.status === 429) {
+      return Response.json({ error: "OpenAI 額度不足或請求過於頻繁，請檢查你的帳戶用量" }, { status: 429 });
+    }
     return Response.json({ error: `OpenAI API 錯誤（${res.status}）` }, { status: 502 });
   }
 

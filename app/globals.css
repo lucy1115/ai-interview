@@ -1,57 +1,68 @@
 @import "tailwindcss";
 
-/* 設計 tokens：暖紙色 + 墨色 + 珊瑚橘強調色 */
+/* 設計 tokens：車廂禮儀海報風 —— 天空藍底、粗黑框漫畫格、白色對話框、淺藍線稿與網點 */
 :root {
-  --paper: #f5f0e6;
-  --paper-2: #ece5d6;
-  --card: #fffdf8;
-  --ink: #17140f;
-  --ink-2: #4a443b;
-  --muted: #7a7266;
-  --line: #ddd4c3;
-  --accent: #e8542c;
-  --accent-ink: #ffffff;
-  --accent-soft: #fbe2d8;
-  --leaf: #2f6b4f;
-  --leaf-soft: #dcebe2;
-  --background: var(--paper);
-  --foreground: var(--ink);
+  --page: #8ccff2; /* 天空藍底色 */
+  --panel: #d4eefb; /* 漫畫格內的淺藍 */
+  --rule: #6db8e3; /* 淺藍線稿 / 網點 */
+  --card: #ffffff;
+  --ink: #161616;
+  --ink-2: #36414a;
+  --muted: #5d6d79;
+  --line: #cfe2ee;
+  --peach: #f19a9a; /* 粉紅套裝 */
+  --peach-soft: #fde4e2;
+  --lemon: #f8e45c; /* 黃色包包 */
+  --lemon-soft: #fdf6c4;
+  --mint: #4dbb74; /* 綠色外套 */
+  --mint-soft: #dcf3e3;
+  --cobalt: #2c5cc5; /* 藍色鞋子 */
+  --alert: #d94a55;
+  --on-color: #161616; /* 彩色底上的文字，深淺模式都固定深色 */
+  --marker: #f8e45c; /* 標題螢光筆底線 */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --paper: #14120f;
-    --paper-2: #1c1915;
-    --card: #211d18;
-    --ink: #f3ede2;
-    --ink-2: #cfc6b7;
-    --muted: #9a9081;
-    --line: #36302a;
-    --accent: #ff6a3d;
-    --accent-ink: #1a0d07;
-    --accent-soft: #3a2017;
-    --leaf: #7cc3a0;
-    --leaf-soft: #1b2e25;
+    --page: #0d2230;
+    --panel: #132f42;
+    --rule: #2b6a92;
+    --card: #18303f;
+    --ink: #f1f6f9;
+    --ink-2: #c3d2dc;
+    --muted: #93a8b6;
+    --line: #2a4658;
+    --peach-soft: #4a2a2e;
+    --lemon: #e9d34c;
+    --lemon-soft: #3d3818;
+    --mint: #5fcf87;
+    --mint-soft: #193a27;
+    --cobalt: #7aa2ff;
+    --alert: #ff7c84;
+    --marker: #5b4f12;
   }
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-paper: var(--paper);
-  --color-paper-2: var(--paper-2);
+  --color-page: var(--page);
+  --color-panel: var(--panel);
+  --color-rule: var(--rule);
   --color-card: var(--card);
   --color-ink: var(--ink);
   --color-ink-2: var(--ink-2);
   --color-muted: var(--muted);
   --color-line: var(--line);
-  --color-accent: var(--accent);
-  --color-accent-ink: var(--accent-ink);
-  --color-accent-soft: var(--accent-soft);
-  --color-leaf: var(--leaf);
-  --color-leaf-soft: var(--leaf-soft);
-  --font-sans: var(--font-geist-sans), "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
-  --font-serif: var(--font-noto-serif-tc), "Songti TC", "PMingLiU", serif;
+  --color-peach: var(--peach);
+  --color-peach-soft: var(--peach-soft);
+  --color-lemon: var(--lemon);
+  --color-lemon-soft: var(--lemon-soft);
+  --color-mint: var(--mint);
+  --color-mint-soft: var(--mint-soft);
+  --color-cobalt: var(--cobalt);
+  --color-alert: var(--alert);
+  --color-on-color: var(--on-color);
+  --font-sans: var(--font-geist-sans), var(--font-noto-sans-tc), "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --font-display: var(--font-noto-sans-tc), "PingFang TC", "Microsoft JhengHei", sans-serif;
   --font-mono: var(--font-geist-mono);
 }
 
@@ -60,15 +71,105 @@ html {
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--page);
+  color: var(--ink);
   font-family: var(--font-sans);
 }
 
-/* 細網點紙紋背景 */
-.paper-dots {
-  background-image: radial-gradient(color-mix(in oklab, var(--ink) 9%, transparent) 1px, transparent 1px);
-  background-size: 22px 22px;
+/* 放在 components layer，讓 Tailwind 的 bg-* 等工具類別可以覆蓋 */
+@layer components {
+/* 漫畫格：粗黑框圓角 */
+.comic {
+  border: 3px solid var(--ink);
+  border-radius: 20px;
+  background-color: var(--card);
+}
+
+/* 對話框：粗黑框＋尾巴（預設尾巴在下方中間） */
+.bubble {
+  position: relative;
+  border: 3px solid var(--ink);
+  border-radius: 18px;
+  background-color: var(--card);
+}
+.bubble::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: inherit;
+  border-right: 3px solid var(--ink);
+  border-bottom: 3px solid var(--ink);
+  border-bottom-right-radius: 4px;
+  left: calc(50% - 10px);
+  bottom: -12px;
+  transform: rotate(45deg);
+}
+.bubble-left::after {
+  left: -12px;
+  top: 18px;
+  bottom: auto;
+  border-right: 0;
+  border-bottom: 3px solid var(--ink);
+  border-left: 3px solid var(--ink);
+  border-radius: 0 0 0 4px;
+}
+.bubble-right::after {
+  left: auto;
+  right: -12px;
+  top: 18px;
+  bottom: auto;
+  border-bottom: 0;
+  border-top: 3px solid var(--ink);
+  border-right: 3px solid var(--ink);
+  border-radius: 0 4px 0 0;
+}
+.bubble-none::after {
+  display: none;
+}
+
+/* 主要按鈕：海報底部那種黑色膠囊 */
+.btn-ink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  border: 3px solid var(--ink);
+  background: var(--ink);
+  color: var(--card);
+  font-weight: 700;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.btn-line {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  border: 3px solid var(--ink);
+  background: var(--card);
+  color: var(--ink);
+  font-weight: 700;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.btn-ink:not(:disabled):hover,
+.btn-line:not(:disabled):hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 var(--peach);
+}
+.btn-ink:disabled,
+.btn-line:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+/* 網點底紋（像海報裡的淺藍網點）；放最後，和 .comic 併用時蓋過白底 */
+.halftone {
+  background-color: var(--panel);
+  background-image: radial-gradient(var(--rule) 1.1px, transparent 1.5px);
+  background-size: 7px 7px;
+}
 }
 
 @keyframes rise {
@@ -92,5 +193,9 @@ body {
   }
   .rise {
     animation: none;
+  }
+  .btn-ink:not(:disabled):hover,
+  .btn-line:not(:disabled):hover {
+    transform: none;
   }
 }

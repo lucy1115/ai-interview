@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { SiteHeader } from "../components/SiteHeader";
+import { API_KEY_HEADER, getApiKey, openApiKeySettings, useApiKey } from "../lib/apiKey";
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
 
@@ -19,7 +20,7 @@ function clampQuestionCount(value: string) {
 function renderBold(text: string) {
   return text.split(/(\*\*[^*\n]+\*\*)/g).map((part, i) =>
     part.length > 4 && part.startsWith("**") && part.endsWith("**") ? (
-      <strong key={i} className="font-semibold">
+      <strong key={i} className="font-bold">
         {part.slice(2, -2)}
       </strong>
     ) : (
@@ -39,21 +40,29 @@ export default function PracticePage() {
   const [error, setError] = useState("");
   const [finished, setFinished] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const hasApiKey = Boolean(useApiKey());
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
   async function send(history: ChatMessage[]) {
+    const apiKey = getApiKey();
+    if (!apiKey) {
+      setError("請先設定你的 OpenAI API Key");
+      openApiKeySettings();
+      return;
+    }
     setLoading(true);
     setError("");
     try {
       const res = await fetch("/interview", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", [API_KEY_HEADER]: apiKey },
         body: JSON.stringify({ jobDescription, messages: history, questionCount }),
       });
       const data = await res.json();
+      if (res.status === 401) openApiKeySettings();
       if (!res.ok) throw new Error(data.error || "發生錯誤");
       setMessages([...history, { role: "assistant", content: data.reply }]);
       setFinished(Boolean(data.finished));
@@ -66,6 +75,10 @@ export default function PracticePage() {
 
   function startInterview() {
     if (!jobDescription.trim()) return;
+    if (!getApiKey()) {
+      openApiKeySettings();
+      return;
+    }
     setQuestionCountInput(String(questionCount));
     setStarted(true);
     setMessages([]);
@@ -92,26 +105,37 @@ export default function PracticePage() {
   const progress = finished ? 100 : Math.round((answeredCount / questionCount) * 100);
 
   const fieldClass =
-    "w-full rounded-xl border border-line bg-card p-4 text-ink placeholder:text-muted outline-none transition focus:border-ink focus:ring-4 focus:ring-accent/15 disabled:opacity-60";
+    "w-full rounded-xl border-[3px] border-ink bg-card p-4 text-ink placeholder:text-muted outline-none transition focus:ring-4 focus:ring-rule/50 disabled:opacity-60";
 
   return (
     <>
       <SiteHeader showCta={false} />
-      <main className="paper-dots flex flex-1 flex-col">
+      <main className="flex flex-1 flex-col">
         <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-4 py-10 sm:px-6 sm:py-14">
           {!started ? (
             <section className="rise flex flex-col gap-8">
-              <div>
-                <p className="text-xs font-semibold tracking-[0.2em] text-accent uppercase">New session</p>
-                <h1 className="mt-3 font-serif text-4xl leading-tight font-black text-ink sm:text-5xl">
+              <div className="flex flex-col items-start gap-4">
+                <span className="rounded-md bg-ink px-3 py-1 font-display text-xs font-bold tracking-widest text-card">
+                  New session
+                </span>
+                <h1 className="font-display text-4xl leading-snug font-black tracking-wider text-ink sm:text-5xl">
                   今天，想練哪一份工作？
                 </h1>
-                <p className="mt-3 text-ink-2">貼上職缺描述、選好題數，面試官馬上就位。</p>
+                <p className="font-medium text-ink-2">貼上職缺描述、選好題數，面試官馬上就位。</p>
               </div>
 
-              <div className="flex flex-col gap-6 rounded-3xl border border-line bg-card p-5 shadow-[0_1px_0_var(--line),0_20px_50px_-30px_rgb(0_0_0/0.35)] sm:p-8">
+              {!hasApiKey && (
+                <div className="comic flex flex-wrap items-center justify-between gap-3 bg-lemon-soft px-5 py-4 text-sm font-medium text-ink">
+                  <span>開始前，請先輸入你自己的 OpenAI API Key（只會存在你的瀏覽器）。</span>
+                  <button type="button" onClick={openApiKeySettings} className="btn-ink px-4 py-1.5 text-sm">
+                    設定 API Key
+                  </button>
+                </div>
+              )}
+
+              <div className="comic flex flex-col gap-7 p-5 sm:p-8">
                 <div className="flex flex-col gap-2.5">
-                  <label htmlFor="jd" className="flex items-center gap-2 font-medium text-ink">
+                  <label htmlFor="jd" className="flex items-center gap-2 font-display font-bold text-ink">
                     <StepDot n={1} /> 職缺描述
                   </label>
                   <textarea
@@ -125,14 +149,14 @@ export default function PracticePage() {
                 </div>
 
                 <div className="flex flex-col gap-2.5">
-                  <label htmlFor="count" className="flex items-center gap-2 font-medium text-ink">
+                  <label htmlFor="count" className="flex items-center gap-2 font-display font-bold text-ink">
                     <StepDot n={2} /> 題目數量
                     <span className="text-sm font-normal text-muted">
                       （{MIN_QUESTIONS}–{MAX_QUESTIONS} 題）
                     </span>
                   </label>
                   <div className="flex items-center gap-3">
-                    <div className="inline-flex items-center rounded-xl border border-line bg-paper">
+                    <div className="inline-flex items-center rounded-xl border-[3px] border-ink bg-card">
                       <StepperButton
                         label="減少題數"
                         disabled={questionCount <= MIN_QUESTIONS}
@@ -149,7 +173,7 @@ export default function PracticePage() {
                         value={questionCountInput}
                         onChange={(e) => setQuestionCountInput(e.target.value)}
                         onBlur={() => setQuestionCountInput(String(questionCount))}
-                        className="w-14 bg-transparent text-center text-lg font-semibold text-ink tabular-nums outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                        className="h-11 w-14 border-x-[3px] border-ink bg-transparent text-center font-display text-lg font-black text-ink tabular-nums outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                       />
                       <StepperButton
                         label="增加題數"
@@ -159,14 +183,14 @@ export default function PracticePage() {
                         +
                       </StepperButton>
                     </div>
-                    <span className="text-sm text-muted">約 {questionCount * 3} 分鐘</span>
+                    <span className="text-sm font-medium text-ink-2">約 {questionCount * 3} 分鐘</span>
                   </div>
                 </div>
 
                 <button
                   onClick={startInterview}
                   disabled={!jobDescription.trim()}
-                  className="group inline-flex items-center justify-center gap-2 self-start rounded-full bg-accent px-7 py-3 font-semibold text-accent-ink shadow-[0_10px_30px_-12px_var(--accent)] transition hover:-translate-y-0.5 disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
+                  className="btn-ink group self-start px-7 py-3"
                 >
                   開始面試
                   <span aria-hidden className="transition group-hover:translate-x-0.5">
@@ -179,36 +203,32 @@ export default function PracticePage() {
             <section className="flex flex-1 flex-col gap-6">
               <div className="flex flex-col gap-3">
                 <div className="flex items-baseline justify-between gap-4">
-                  <h1 className="font-serif text-2xl font-black text-ink sm:text-3xl">
+                  <h1 className="font-display text-2xl font-black tracking-wide text-ink sm:text-3xl">
                     {finished ? "面試結束 · 你的回饋" : "面試進行中"}
                   </h1>
-                  <span className="text-sm text-muted tabular-nums">
+                  <span className="rounded-full bg-ink px-3 py-0.5 text-sm font-bold text-card tabular-nums">
                     {finished ? `共 ${questionCount} 題` : `${answeredCount} / ${questionCount} 題`}
                   </span>
                 </div>
-                <div className="h-1.5 overflow-hidden rounded-full bg-line">
+                <div className="h-3.5 overflow-hidden rounded-full border-2 border-ink bg-card">
                   <div
-                    className={`h-full rounded-full transition-all duration-500 ${finished ? "bg-leaf" : "bg-accent"}`}
+                    className={`h-full transition-all duration-500 ${finished ? "bg-mint" : "bg-peach"}`}
                     style={{ width: `${progress}%` }}
                   />
                 </div>
                 {finished && (
-                  <p className="text-sm text-ink-2">以下是整體評分、逐題建議，以及每一題的參考回答。</p>
+                  <p className="text-sm font-medium text-ink-2">以下是整體評分、逐題建議，以及每一題的參考回答。</p>
                 )}
               </div>
 
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-5">
                 {messages.map((m, i) =>
                   m.role === "assistant" ? (
-                    <div key={i} className="rise flex max-w-[92%] gap-3 self-start">
-                      <span className="mt-1 grid size-8 shrink-0 place-items-center rounded-full bg-ink font-serif text-sm font-black text-paper">
-                        面
-                      </span>
+                    <div key={i} className="rise flex max-w-[94%] gap-4 self-start">
+                      <Avatar />
                       <div
-                        className={`rounded-2xl rounded-tl-md border px-5 py-4 leading-relaxed whitespace-pre-wrap text-ink ${
-                          finished && i === messages.length - 1
-                            ? "border-leaf/40 bg-leaf-soft"
-                            : "border-line bg-card"
+                        className={`bubble bubble-left px-5 py-4 leading-relaxed whitespace-pre-wrap text-ink ${
+                          finished && i === messages.length - 1 ? "bg-mint-soft" : ""
                         }`}
                       >
                         {renderBold(m.content)}
@@ -217,22 +237,20 @@ export default function PracticePage() {
                   ) : (
                     <div
                       key={i}
-                      className="rise max-w-[85%] self-end rounded-2xl rounded-tr-md bg-ink px-5 py-4 leading-relaxed whitespace-pre-wrap text-paper"
+                      className="rise bubble bubble-right mr-3 max-w-[85%] self-end bg-lemon px-5 py-4 leading-relaxed whitespace-pre-wrap text-on-color"
                     >
                       {m.content}
                     </div>
                   ),
                 )}
                 {loading && (
-                  <div className="flex items-center gap-3 self-start">
-                    <span className="grid size-8 place-items-center rounded-full bg-ink font-serif text-sm font-black text-paper">
-                      面
-                    </span>
-                    <div className="flex items-center gap-1.5 rounded-2xl rounded-tl-md border border-line bg-card px-5 py-4">
+                  <div className="flex items-center gap-4 self-start">
+                    <Avatar />
+                    <div className="bubble bubble-left flex items-center gap-1.5 px-5 py-4">
                       {[0, 1, 2].map((d) => (
                         <span
                           key={d}
-                          className="size-1.5 animate-bounce rounded-full bg-muted"
+                          className="size-2 animate-bounce rounded-full bg-ink"
                           style={{ animationDelay: `${d * 120}ms` }}
                         />
                       ))}
@@ -241,12 +259,14 @@ export default function PracticePage() {
                   </div>
                 )}
                 {error && (
-                  <p className="rounded-xl border border-accent/40 bg-accent-soft px-4 py-3 text-sm text-ink">{error}</p>
+                  <p className="rounded-xl border-[3px] border-ink bg-peach-soft px-4 py-3 text-sm font-medium text-ink">
+                    ⚠ {error}
+                  </p>
                 )}
                 <div ref={bottomRef} />
               </div>
 
-              <div className="sticky bottom-0 mt-auto -mx-4 flex flex-col gap-3 border-t border-line bg-paper/90 px-4 pt-4 pb-5 backdrop-blur-md sm:-mx-6 sm:px-6">
+              <div className="sticky bottom-0 mt-auto -mx-4 flex flex-col gap-3 border-t-[3px] border-ink bg-page/95 px-4 pt-4 pb-5 backdrop-blur-md sm:-mx-6 sm:px-6">
                 {!finished && (
                   <textarea
                     value={answer}
@@ -268,7 +288,7 @@ export default function PracticePage() {
                     <button
                       onClick={() => submitAnswer(answer)}
                       disabled={loading || !answer.trim()}
-                      className="rounded-full bg-accent px-6 py-2.5 font-semibold text-accent-ink transition hover:-translate-y-0.5 disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-40"
+                      className="btn-ink px-6 py-2"
                     >
                       送出回答
                     </button>
@@ -276,11 +296,7 @@ export default function PracticePage() {
                   <button
                     onClick={reset}
                     disabled={loading}
-                    className={
-                      finished
-                        ? "rounded-full bg-ink px-6 py-2.5 font-semibold text-paper transition hover:bg-accent hover:text-accent-ink disabled:opacity-50"
-                        : "rounded-full px-5 py-2.5 font-medium text-ink-2 transition hover:bg-paper-2 disabled:opacity-50"
-                    }
+                    className={finished ? "btn-ink px-6 py-2" : "btn-line px-5 py-2"}
                   >
                     {finished ? "再面試一次" : "重新開始"}
                   </button>
@@ -294,9 +310,17 @@ export default function PracticePage() {
   );
 }
 
+function Avatar() {
+  return (
+    <span className="mt-1 grid size-10 shrink-0 place-items-center rounded-full border-[3px] border-ink bg-card font-display text-sm font-black text-ink">
+      面
+    </span>
+  );
+}
+
 function StepDot({ n }: { n: number }) {
   return (
-    <span className="grid size-6 place-items-center rounded-full bg-ink text-xs font-semibold text-paper">{n}</span>
+    <span className="grid size-6 place-items-center rounded-full bg-ink text-xs font-bold text-card">{n}</span>
   );
 }
 
@@ -317,7 +341,7 @@ function StepperButton({
       aria-label={label}
       disabled={disabled}
       onClick={onClick}
-      className="grid size-11 place-items-center text-xl text-ink transition hover:text-accent disabled:cursor-not-allowed disabled:opacity-30"
+      className="grid size-11 place-items-center text-xl font-bold text-ink transition hover:bg-lemon-soft disabled:cursor-not-allowed disabled:opacity-30"
     >
       {children}
     </button>

@@ -1,195 +1,192 @@
-// 日系卡通風插圖：穿套裝、抱著履歷準備進面試室的女孩
-const SKIN = "#f8dcc8";
-const SKIN_SHADE = "#ecc2a8";
-const HAIR = "#3b2a24";
-const HAIR_LIGHT = "#5a4036";
-const SUIT = "#2b3350";
-const SUIT_DARK = "#20263d";
-const SUIT_LIGHT = "#3a4466";
-const EYE = "#6b3f2a";
-const LINE = "#2a1712";
+// 禮儀海報風插圖：兩格漫畫。上格是準備好的職缺描述與履歷特寫，
+// 下格是淺藍線稿的面試室，穿粉紅套裝的應徵者握拳替自己打氣。
+const INK = "#161616";
+const PANEL = "#d4eefb";
+const RULE = "#6db8e3";
+const RULE_FILL = "#eaf7fe";
+const PEACH = "#f19a9a";
+const LEMON = "#f8e45c";
+const COBALT = "#2c5cc5";
+const SKIN = "#fbe3d3";
+const HAIR = "#c0613a";
 
-function Eye({ cx, cy }: { cx: number; cy: number }) {
-  return (
-    <g>
-      <ellipse cx={cx} cy={cy} rx="14.5" ry="18" fill="#fff" />
-      <ellipse cx={cx} cy={cy + 2} rx="12" ry="15.5" fill={EYE} />
-      <ellipse cx={cx} cy={cy + 8} rx="9" ry="7" fill="#c07a4e" opacity="0.6" />
-      <ellipse cx={cx} cy={cy + 1} rx="5.5" ry="7.5" fill={LINE} />
-      <circle cx={cx - 4.5} cy={cy - 5} r="5" fill="#fff" />
-      <circle cx={cx + 4.5} cy={cy + 7} r="2.2" fill="#fff" />
-      <circle cx={cx + 5.5} cy={cy - 6} r="1.4" fill="#fff" />
-      {/* 上睫毛＋眼尾小翹 */}
-      <path
-        d={`M${cx - 16} ${cy - 6} Q${cx} ${cy - 23} ${cx + 16} ${cy - 8} L${cx + 19} ${cy - 12}`}
-        fill="none"
-        stroke={LINE}
-        strokeWidth="4.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* 下睫毛 */}
-      <path
-        d={`M${cx - 6} ${cy + 18.5} Q${cx} ${cy + 20} ${cx + 6} ${cy + 18.5}`}
-        fill="none"
-        stroke={LINE}
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        opacity="0.6"
-      />
-    </g>
-  );
-}
+const PANEL_A = "M34 16 H446 Q464 16 464 34 V144 L16 178 V34 Q16 16 34 16 Z";
+const PANEL_B = "M16 196 L464 162 V526 Q464 544 446 544 H34 Q16 544 16 526 Z";
 
-function Sparkle({ x, y, s = 1, color }: { x: number; y: number; s?: number; color: string }) {
+// 先畫粗黑外框再疊上顏色，做出漫畫描線的手臂
+function Limb({ d }: { d: string }) {
   return (
-    <path
-      transform={`translate(${x} ${y}) scale(${s})`}
-      d="M0 -12 Q2 -2 12 0 Q2 2 0 12 Q-2 2 -12 0 Q-2 -2 0 -12 Z"
-      fill={color}
-    />
+    <>
+      <path d={d} fill="none" stroke={INK} strokeWidth="26" strokeLinecap="round" strokeLinejoin="round" />
+      <path d={d} fill="none" stroke={PEACH} strokeWidth="20" strokeLinecap="round" strokeLinejoin="round" />
+    </>
   );
 }
 
 export function HeroIllustration({ className = "" }: { className?: string }) {
   return (
     <svg
-      viewBox="0 0 480 520"
+      viewBox="0 0 480 560"
       className={className}
       role="img"
-      aria-label="穿著套裝、抱著履歷的女孩站在面試室門口，準備進去面試"
+      aria-label="兩格漫畫：上格是職缺描述與履歷特寫；下格是穿粉紅套裝的應徵者在面試室裡握拳打氣，面試官說「請先自我介紹」"
     >
-      {/* 背景圓 */}
-      <circle cx="255" cy="270" r="215" fill="var(--accent-soft)" />
+      <defs>
+        <pattern id="hero-dots" width="7" height="7" patternUnits="userSpaceOnUse">
+          <circle cx="3.5" cy="3.5" r="1.2" fill={RULE} />
+        </pattern>
+        <clipPath id="hero-clip-a">
+          <path d={PANEL_A} />
+        </clipPath>
+        <clipPath id="hero-clip-b">
+          <path d={PANEL_B} />
+        </clipPath>
+      </defs>
 
-      {/* 面試室的門 */}
-      <rect x="36" y="128" width="116" height="352" rx="6" fill="var(--card)" stroke="var(--line)" strokeWidth="3" />
-      <rect x="52" y="150" width="84" height="150" rx="4" fill="none" stroke="var(--line)" strokeWidth="2" />
-      <rect x="52" y="318" width="84" height="140" rx="4" fill="none" stroke="var(--line)" strokeWidth="2" />
-      <circle cx="130" cy="310" r="6" fill="var(--muted)" />
-      <rect x="58" y="96" width="72" height="28" rx="6" fill="var(--accent)" />
-      <text x="94" y="115.5" textAnchor="middle" fontSize="15" fontWeight="700" fill="#fff">
-        面試室
-      </text>
+      {/* ───── 上格：職缺描述＋履歷特寫 ───── */}
+      <g clipPath="url(#hero-clip-a)">
+        <rect width="480" height="200" fill={PANEL} />
+        <rect width="480" height="200" fill="url(#hero-dots)" opacity="0.55" />
+        <path d="M0 20 L200 90 M0 70 L180 110 M480 10 L300 80 M480 120 L320 110" stroke={RULE} strokeWidth="2" />
 
-      {/* 對話框 */}
-      <g>
-        <rect x="282" y="38" width="168" height="54" rx="27" fill="var(--card)" stroke="var(--line)" strokeWidth="2.5" />
-        <path d="M318 90 L306 112 L336 91" fill="var(--card)" stroke="var(--line)" strokeWidth="2.5" strokeLinejoin="round" />
-        <path d="M316 89.5 L338 89.5" stroke="var(--card)" strokeWidth="4" />
-        <text x="366" y="71" textAnchor="middle" fontSize="17" fontWeight="700" fill="var(--ink)">
-          下一位，請進～
+        {/* 職缺描述 */}
+        <g transform="rotate(-7 140 95)">
+          <rect x="62" y="40" width="150" height="112" rx="6" fill="#fff" stroke={INK} strokeWidth="3" />
+          <text x="80" y="70" fontSize="17" fontWeight="900" fill={INK}>
+            職缺描述
+          </text>
+          <rect x="80" y="84" width="112" height="6" rx="3" fill={RULE} />
+          <rect x="80" y="98" width="96" height="6" rx="3" fill={RULE} />
+          <rect x="80" y="112" width="104" height="6" rx="3" fill={RULE} />
+          <rect x="80" y="126" width="64" height="6" rx="3" fill={RULE} />
+          <circle cx="188" cy="128" r="13" fill={PEACH} stroke={INK} strokeWidth="2.5" />
+          <path d="M182 128 L187 133 L195 123" fill="none" stroke={INK} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+        </g>
+
+        {/* 履歷資料夾 */}
+        <g transform="rotate(5 340 95)">
+          <rect x="268" y="36" width="140" height="96" rx="4" fill="#fff" stroke={INK} strokeWidth="3" />
+          <path
+            d="M258 62 H316 L326 52 H420 Q426 52 426 58 V148 Q426 154 420 154 H264 Q258 154 258 148 Z"
+            fill={LEMON}
+            stroke={INK}
+            strokeWidth="3"
+            strokeLinejoin="round"
+          />
+          <rect x="300" y="92" width="92" height="30" rx="6" fill="#fff" stroke={INK} strokeWidth="2.5" />
+          <text x="346" y="113" textAnchor="middle" fontSize="17" fontWeight="900" fill={INK}>
+            履歷
+          </text>
+        </g>
+        <path d="M436 40 l12 -10 M442 58 l16 -3" stroke={INK} strokeWidth="2.5" strokeLinecap="round" />
+      </g>
+      <path d={PANEL_A} fill="none" stroke={INK} strokeWidth="4" strokeLinejoin="round" />
+
+      {/* ───── 下格：面試室 ───── */}
+      <g clipPath="url(#hero-clip-b)">
+        <rect y="150" width="480" height="420" fill={PANEL} />
+        <rect y="150" width="480" height="70" fill="url(#hero-dots)" opacity="0.6" />
+        <rect y="468" width="480" height="100" fill="url(#hero-dots)" />
+        <path d="M0 468 H480" stroke={RULE} strokeWidth="2.5" />
+
+        {/* 面試室的門（淺藍線稿） */}
+        <rect x="44" y="232" width="112" height="236" rx="3" fill={RULE_FILL} stroke={RULE} strokeWidth="3" />
+        <rect x="58" y="248" width="84" height="96" rx="3" fill="none" stroke={RULE} strokeWidth="2" />
+        <rect x="58" y="356" width="84" height="98" rx="3" fill="none" stroke={RULE} strokeWidth="2" />
+        <circle cx="144" cy="350" r="5" fill={RULE} />
+        <rect x="64" y="204" width="72" height="22" rx="5" fill="#fff" stroke={RULE} strokeWidth="2.5" />
+        <text x="100" y="220" textAnchor="middle" fontSize="13" fontWeight="700" fill={RULE}>
+          面試室
         </text>
-      </g>
 
-      {/* 地面陰影 */}
-      <ellipse cx="245" cy="486" rx="78" ry="11" fill="var(--ink)" opacity="0.12" />
+        {/* 面試官（淺藍線稿） */}
+        <rect x="352" y="318" width="70" height="72" rx="10" fill={RULE_FILL} stroke={RULE} strokeWidth="2.5" />
+        <path d="M352 392 Q354 352 387 350 Q420 352 422 392 Z" fill={RULE_FILL} stroke={RULE} strokeWidth="3" strokeLinejoin="round" />
+        <path d="M387 352 L382 366 L387 384 L392 366 Z" fill="none" stroke={RULE} strokeWidth="2" strokeLinejoin="round" />
+        <circle cx="387" cy="322" r="20" fill="#f6fbfe" stroke={RULE} strokeWidth="3" />
+        <path d="M367 318 Q369 298 387 298 Q406 298 407 318 Q398 308 387 310 Q375 310 367 318 Z" fill="#bfe2f5" stroke={RULE} strokeWidth="2.5" strokeLinejoin="round" />
+        <circle cx="380" cy="324" r="5" fill="none" stroke={RULE} strokeWidth="2" />
+        <circle cx="395" cy="324" r="5" fill="none" stroke={RULE} strokeWidth="2" />
+        <path d="M385 324 H390 M381 334 Q387 338 393 334" fill="none" stroke={RULE} strokeWidth="2" strokeLinecap="round" />
+        <path d="M332 388 L340 360 H372 L368 388 Z" fill="#f6fbfe" stroke={RULE} strokeWidth="2.5" strokeLinejoin="round" />
+        <rect x="318" y="388" width="146" height="12" rx="3" fill={RULE_FILL} stroke={RULE} strokeWidth="3" />
+        <path d="M332 400 V468 M450 400 V468" stroke={RULE} strokeWidth="3" />
 
-      {/* 後髮：妹妹頭（齊下巴、髮尾往內收的圓弧鮑伯） */}
-      <path
-        d="M160 150 Q152 66 245 64 Q338 66 330 150 Q338 212 318 242 Q302 252 288 238 L202 238 Q188 252 172 242 Q152 212 160 150 Z"
-        fill={HAIR}
-      />
-
-      {/* 腿與鞋 */}
-      <rect x="219" y="388" width="19" height="86" rx="8" fill={SKIN} />
-      <rect x="253" y="388" width="19" height="86" rx="8" fill={SKIN} />
-      <path d="M214 470 Q214 462 228 462 Q242 462 242 474 L242 480 L212 480 Z" fill={LINE} />
-      <path d="M249 474 Q249 462 263 462 Q277 462 277 470 L279 480 L249 480 Z" fill={LINE} />
-
-      {/* 裙子 */}
-      <path d="M194 330 L296 330 L306 398 L184 398 Z" fill={SUIT_DARK} />
-      <path d="M245 340 L245 398" stroke={SUIT} strokeWidth="3" />
-
-      {/* 脖子 */}
-      <rect x="233" y="216" width="24" height="30" rx="6" fill={SKIN} />
-      <path d="M233 228 Q245 238 257 228 L257 236 Q245 244 233 236 Z" fill={SKIN_SHADE} />
-
-      {/* 西裝外套 */}
-      <path d="M198 248 Q245 234 292 248 L304 344 L186 344 Z" fill={SUIT} />
-      <path d="M230 242 L245 282 L260 242 Z" fill="#fff" />
-      <path d="M230 242 L216 256 L240 300 L245 282 Z" fill={SUIT_LIGHT} />
-      <path d="M260 242 L274 256 L250 300 L245 282 Z" fill={SUIT_LIGHT} />
-      <circle cx="245" cy="318" r="3.5" fill={SUIT_LIGHT} />
-
-      {/* 手臂 */}
-      <path d="M200 254 Q186 290 214 310" fill="none" stroke={SUIT} strokeWidth="24" strokeLinecap="round" />
-      <path d="M290 254 Q304 290 276 310" fill="none" stroke={SUIT} strokeWidth="24" strokeLinecap="round" />
-
-      {/* 履歷資料夾 */}
-      <g transform="rotate(-6 245 300)">
-        <rect x="212" y="270" width="70" height="56" rx="5" fill="var(--accent)" />
-        <rect x="220" y="262" width="54" height="14" rx="2" fill="#fff" />
-        <path d="M226 268 L262 268" stroke="#cfc6b7" strokeWidth="2" />
-        <rect x="226" y="286" width="42" height="5" rx="2.5" fill="#fff" opacity="0.6" />
-      </g>
-      <circle cx="214" cy="310" r="10" fill={SKIN} />
-      <circle cx="276" cy="306" r="10" fill={SKIN} />
-
-      {/* 臉 */}
-      <path
-        d="M178 132 Q174 188 206 214 Q228 230 245 230 Q262 230 284 214 Q316 188 312 132 Z"
-        fill={SKIN}
-      />
-
-      {/* 側髮 */}
-      <path d="M176 128 Q162 192 178 240 Q190 248 202 238 Q188 196 194 140 Z" fill={HAIR} />
-      <path d="M314 128 Q328 192 312 240 Q300 248 288 238 Q302 196 296 140 Z" fill={HAIR} />
-
-      {/* 瀏海：齊瀏海，下緣微微起伏 */}
-      <path
-        d="M172 152 Q166 76 245 74 Q324 76 318 152 Q311 147 303 149 Q290 145 276 149 Q260 145 245 148 Q230 145 214 149 Q200 145 187 149 Q179 147 172 152 Z"
-        fill={HAIR}
-      />
-      <path
-        d="M214 149 Q216 128 222 112 M245 148 Q246 126 248 108 M276 149 Q274 128 270 112"
-        fill="none"
-        stroke={LINE}
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        opacity="0.35"
-      />
-      {/* 天使光圈 */}
-      <path d="M194 104 Q245 86 296 104" fill="none" stroke={HAIR_LIGHT} strokeWidth="7" strokeLinecap="round" />
-      {/* 小蝴蝶結髮夾 */}
-      <g transform="translate(300 110) rotate(-20) scale(0.7)">
-        <path d="M0 0 L-20 -12 Q-25 0 -20 12 Z" fill="var(--accent)" />
-        <path d="M0 0 L20 -12 Q25 0 20 12 Z" fill="var(--accent)" />
-        <circle r="5.5" fill="#c63f1c" />
-      </g>
-
-      {/* 眉毛 */}
-      <path d="M207 157 Q215 153 223 156" fill="none" stroke={HAIR} strokeWidth="2.6" strokeLinecap="round" />
-      <path d="M267 156 Q275 153 283 157" fill="none" stroke={HAIR} strokeWidth="2.6" strokeLinecap="round" />
-
-      {/* 眼睛（大一點、靠下一點更顯稚氣） */}
-      <Eye cx={215} cy={180} />
-      <Eye cx={275} cy={180} />
-
-      {/* 腮紅：圓腮紅＋斜線 */}
-      <ellipse cx="200" cy="206" rx="14" ry="8" fill="#f59a9a" opacity="0.55" />
-      <ellipse cx="290" cy="206" rx="14" ry="8" fill="#f59a9a" opacity="0.55" />
-      <path d="M193 208 L197 202 M200 209 L204 203 M207 208 L211 202" stroke="#e77b7b" strokeWidth="1.6" strokeLinecap="round" />
-      <path d="M283 208 L287 202 M290 209 L294 203 M297 208 L301 202" stroke="#e77b7b" strokeWidth="1.6" strokeLinecap="round" />
-
-      {/* 小鼻子 */}
-      <path d="M244 198 Q246 200 248 198" fill="none" stroke={SKIN_SHADE} strokeWidth="2" strokeLinecap="round" />
-
-      {/* 張口笑 */}
-      <path d="M237 207 Q245 207 253 207 Q252 218 245 218 Q238 218 237 207 Z" fill="#c4495a" stroke={LINE} strokeWidth="2" strokeLinejoin="round" />
-      <path d="M240.5 214 Q245 211 249.5 214 Q247.5 217 245 217 Q242.5 217 240.5 214 Z" fill="#f08a96" />
-
-
-      {/* 閃亮與加油 */}
-      <Sparkle x={414} y={190} s={1.1} color="var(--accent)" />
-      <Sparkle x={432} y={232} s={0.6} color="#f5b83d" />
-      <Sparkle x={168} y={58} s={0.7} color="#f5b83d" />
-      <g transform="rotate(8 390 330)">
-        <rect x="344" y="310" width="96" height="40" rx="20" fill="var(--leaf)" />
-        <text x="392" y="336" textAnchor="middle" fontSize="17" fontWeight="700" fill="#fff">
-          加油！
+        {/* 面試官的對話框 */}
+        <rect x="300" y="202" width="156" height="50" rx="14" fill="#fff" stroke={INK} strokeWidth="3" />
+        <path d="M390 250 L398 272 L410 250" fill="#fff" stroke={INK} strokeWidth="3" strokeLinejoin="round" />
+        <path d="M392 250 H408" stroke="#fff" strokeWidth="4" />
+        <text x="378" y="234" textAnchor="middle" fontSize="16" fontWeight="900" fill={INK}>
+          請先自我介紹。
         </text>
+
+        {/* ── 應徵者 ── */}
+        <ellipse cx="250" cy="528" rx="54" ry="7" fill={RULE} opacity="0.6" />
+
+        {/* 後髮 */}
+        <path
+          d="M222 232 Q218 196 250 194 Q282 196 278 232 Q284 262 272 276 Q262 270 262 258 L238 258 Q238 270 228 276 Q216 262 222 232 Z"
+          fill={HAIR}
+          stroke={INK}
+          strokeWidth="3"
+          strokeLinejoin="round"
+        />
+
+        {/* 褲子與鞋 */}
+        <path d="M222 376 L249 376 L246 508 L229 508 Z" fill={PEACH} stroke={INK} strokeWidth="3" strokeLinejoin="round" />
+        <path d="M251 376 L278 376 L272 508 L254 508 Z" fill={PEACH} stroke={INK} strokeWidth="3" strokeLinejoin="round" />
+        <path d="M226 504 L248 504 L249 520 Q236 524 214 520 Q214 510 226 504 Z" fill={COBALT} stroke={INK} strokeWidth="3" strokeLinejoin="round" />
+        <path d="M252 504 L274 504 Q286 510 286 520 Q266 524 251 520 Z" fill={COBALT} stroke={INK} strokeWidth="3" strokeLinejoin="round" />
+
+        {/* 脖子、外套、襯衫 */}
+        <rect x="243" y="254" width="14" height="28" fill={SKIN} stroke={INK} strokeWidth="2.5" />
+        <path
+          d="M228 280 Q250 272 272 280 Q284 284 286 300 L284 382 L216 382 L214 300 Q216 284 228 280 Z"
+          fill={PEACH}
+          stroke={INK}
+          strokeWidth="3"
+          strokeLinejoin="round"
+        />
+        <path d="M240 278 L250 304 L260 278 Z" fill="#fff" stroke={INK} strokeWidth="2.5" strokeLinejoin="round" />
+        <path d="M240 280 L232 300 L250 334 M260 280 L268 300 L250 334" fill="none" stroke={INK} strokeWidth="2.5" strokeLinejoin="round" />
+
+        {/* 抱在胸前的履歷 */}
+        <g transform="rotate(-8 250 325)">
+          <rect x="229" y="292" width="44" height="14" fill="#fff" stroke={INK} strokeWidth="2" />
+          <rect x="222" y="300" width="58" height="70" rx="4" fill={LEMON} stroke={INK} strokeWidth="3" />
+          <rect x="234" y="322" width="34" height="5" rx="2.5" fill={INK} opacity="0.25" />
+        </g>
+        <Limb d="M224 292 Q206 318 214 344 L238 340" />
+        <circle cx="242" cy="339" r="8" fill={SKIN} stroke={INK} strokeWidth="2.5" />
+
+        {/* 握拳打氣的手 */}
+        <Limb d="M276 292 L302 320 L306 282" />
+        <circle cx="306" cy="272" r="10" fill={SKIN} stroke={INK} strokeWidth="2.5" />
+        <path d="M300 268 H312 M300 274 H311" stroke={INK} strokeWidth="1.5" strokeLinecap="round" />
+        <path d="M322 250 l10 -10 M328 266 l14 -3 M316 240 l2 -14" stroke={INK} strokeWidth="2.5" strokeLinecap="round" />
+
+        {/* 臉 */}
+        <ellipse cx="250" cy="236" rx="22" ry="26" fill={SKIN} stroke={INK} strokeWidth="3" />
+        <path
+          d="M227 236 Q222 204 250 202 Q280 204 274 238 Q268 222 254 218 Q240 228 227 236 Z"
+          fill={HAIR}
+          stroke={INK}
+          strokeWidth="3"
+          strokeLinejoin="round"
+        />
+        <path d="M252 206 Q245 214 238 226" fill="none" stroke={INK} strokeWidth="1.5" strokeLinecap="round" />
+        <path d="M236 228 Q241 225 245 227 M256 227 Q261 225 265 228" fill="none" stroke={INK} strokeWidth="2" strokeLinecap="round" />
+        <ellipse cx="241" cy="236" rx="2.6" ry="3.6" fill={INK} />
+        <ellipse cx="259" cy="236" rx="2.6" ry="3.6" fill={INK} />
+        <path d="M250 240 L248 247 L251 247" fill="none" stroke={INK} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+        <ellipse cx="234" cy="248" rx="5" ry="3" fill={PEACH} opacity="0.8" />
+        <ellipse cx="266" cy="248" rx="5" ry="3" fill={PEACH} opacity="0.8" />
+        <path d="M242 252 Q250 254 258 252 Q256 262 250 262 Q244 262 242 252 Z" fill="#c94a55" stroke={INK} strokeWidth="2" strokeLinejoin="round" />
+
+        {/* 幹勁線 */}
+        <path d="M206 206 l-10 -8 M203 222 l-13 -2 M212 192 l-6 -11" stroke={INK} strokeWidth="2.5" strokeLinecap="round" />
       </g>
+      <path d={PANEL_B} fill="none" stroke={INK} strokeWidth="4" strokeLinejoin="round" />
     </svg>
   );
 }
